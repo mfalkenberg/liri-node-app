@@ -1,5 +1,6 @@
-var neededTwitter = require("./keys.js");
+var twitterKeys = require("./keys.js");
 var request = require("request");
+var Twitter = require('twitter');
 
 var commands = process.argv[2];
 
@@ -56,6 +57,26 @@ function movie() {
     		console.log("Language of the movie: " + JSON.parse(body).Language);
     		console.log("Plot of the movie: " + JSON.parse(body).Plot);
     		console.log("Actors in the movie: " + JSON.parse(body).Actors);
+  		}
+	});
+}
+
+function tweets() {
+	var client = new Twitter({
+	  consumer_key: twitterKeys.consumer_key,
+	  consumer_secret: twitterKeys.consumer_secret ,
+	  access_token_key: twitterKeys.access_token_key,
+	  access_token_secret: twitterKeys.access_token_secret
+	});
+	var params = {screen_name: 'maggieBerkeley'};
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+  		if (!error) {
+    		// console.log(tweets);
+    		for (var i = 0; i < tweets.length; i++) {
+    			console.log(tweets[i].text + " (" + tweets[i].created_at + ")");
+    		}
+  		} else {
+  			console.log(error);
   		}
 	});
 }
