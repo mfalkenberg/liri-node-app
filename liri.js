@@ -1,8 +1,10 @@
-var twitterKeys = require("./keys.js");
+var keys = require("./keys.js");
 var request = require("request");
 var Twitter = require('twitter');
-
+var Spotify = require('node-spotify-api');
+var fs = require("fs");
 var commands = process.argv[2];
+const opn = require('opn');
 
 switch (commands) {
     case "my-tweets":
@@ -62,16 +64,16 @@ function movie() {
 }
 
 function tweets() {
+	// https://www.npmjs.com/package/twitter
 	var client = new Twitter({
-	  consumer_key: twitterKeys.consumer_key,
-	  consumer_secret: twitterKeys.consumer_secret ,
-	  access_token_key: twitterKeys.access_token_key,
-	  access_token_secret: twitterKeys.access_token_secret
+	  consumer_key: keys.twitter.consumer_key,
+	  consumer_secret: keys.twitter.consumer_secret ,
+	  access_token_key: keys.twitter.access_token_key,
+	  access_token_secret: keys.twitter.access_token_secret
 	});
 	var params = {screen_name: 'maggieBerkeley'};
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
   		if (!error) {
-    		// console.log(tweets);
     		for (var i = 0; i < tweets.length; i++) {
     			console.log(tweets[i].text + " (" + tweets[i].created_at + ")");
     		}
@@ -79,4 +81,47 @@ function tweets() {
   			console.log(error);
   		}
 	});
+}
+
+function spotify() {
+  var spotify = new Spotify({
+    id: keys.spotify.client_id,
+    secret: keys.spotify.client_secret
+  });
+
+  var song = "";
+  var nodeArgs = process.argv;
+
+  if (nodeArgs.length == 3) {
+    // no input given, default to movie Mr. Nobody
+    song = "The+Sign+Ace+of+Base";
+  } else {
+    for (var i = 3; i < nodeArgs.length; i++) {
+      if (i == 3) {
+        song = nodeArgs[i];
+      } else {
+        song += "+" + nodeArgs[i];
+      }
+    }
+  }
+ 
+  spotify.search({ type: 'track', query: song}, function(err, data) {
+    if (err) {
+      return console.log('Error occurred: ' + err);
+    }
+    
+    for (var i = 0; i < data.tracks.items.length; i++) {
+          console.log("🦄 " + data.tracks.items[i].artists[0].name + " - " + data.tracks.items[i].name);
+          console.log("🎧 Album: " + data.tracks.items[i].album.name);
+          console.log("🌍 Preview-url: " + data.tracks.items[i].preview_url);
+          console.log("--------------------------------------------------------"); 
+    }
+
+    //open the preview in the local browser, only tested on Mac :)
+    opn(data.tracks.items[0].preview_url, {wait: false});
+  });
+}
+
+function says(){
+  
 }

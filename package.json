@@ -14,9 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "node-spotify-api": "1.0.7",
+    "opn": "^5.2.0",
     "request": "^2.81.0",
-    "twitter": "1.7.1",
-    "node-spotify-api": "1.0.7"
+    "twitter": "1.7.1"
   },
   "bugs": {
     "url": "https://github.com/mfalkenberg/liri-node-app/issues"
