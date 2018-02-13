@@ -12,7 +12,7 @@ switch (commands) {
         break;
 
     case "spotify-this-song":
-        spotify();
+        spotify(process.argv);
         break;
 
     case "movie-this":
@@ -83,16 +83,15 @@ function tweets() {
 	});
 }
 
-function spotify() {
+function spotify(nodeArgs) {
   var spotify = new Spotify({
     id: keys.spotify.client_id,
     secret: keys.spotify.client_secret
   });
 
   var song = "";
-  var nodeArgs = process.argv;
 
-  if (nodeArgs.length == 3) {
+  if (nodeArgs.length <= 3) {
     // no input given, default to movie Mr. Nobody
     song = "The+Sign+Ace+of+Base";
   } else {
@@ -123,5 +122,36 @@ function spotify() {
 }
 
 function says(){
-  
+  fs.readFile("random.txt", "utf8", function(err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log(data);
+        // spotify-this-song,"I Want it That Way"
+
+        // // Break down all the numbers inside
+        data = data.split(",");
+         console.log(data);
+
+        switch (data[0]) {
+          case "my-tweets":
+              tweets();
+              break;
+
+          case "spotify-this-song":
+              // create a pseudo argv to avoid
+              // process.argv[3] = data[1];
+              var pseudoArgv = ["", "", "", data[1]];
+              spotify(pseudoArgv);
+              break;
+
+          case "movie-this":
+              movie();
+              break;
+
+          case "do-what-it-says":
+              says();
+              break;
+        }
+    });
 }
